@@ -1,307 +1,298 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>ZIZZ Wallet - Create Account</title>
+<title>Create ZIZZ Wallet</title>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
 
-        body {
-            min-height: 100vh;
-            background: #06110d;
-            color: white;
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
+body{
+    min-height:100vh;
+    background:#07070b;
+    color:white;
+    font-family:Arial,Helvetica,sans-serif;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
 
-        .container {
-            width: 100%;
-            max-width: 420px;
-        }
+.box{
+    width:100%;
+    max-width:400px;
+    background:#111118;
+    border:1px solid #252532;
+    border-radius:20px;
+    padding:28px;
+}
 
-        .logo {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 18px;
-            border-radius: 50%;
-            background: linear-gradient(145deg, #d8b45a, #8d671c);
-            color: #06110d;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 45px;
-            font-weight: bold;
-            box-shadow: 0 0 35px rgba(216,180,90,.25);
-        }
+.logo{
+    text-align:center;
+    font-size:30px;
+    font-weight:bold;
+    margin-bottom:8px;
+}
 
-        h1 {
-            text-align: center;
-            font-size: 27px;
-            margin-bottom: 7px;
-        }
+.logo span{
+    color:#7c5cff;
+}
 
-        .subtitle {
-            text-align: center;
-            color: #91a59b;
-            margin-bottom: 28px;
-        }
+.subtitle{
+    text-align:center;
+    color:#999;
+    margin-bottom:25px;
+}
 
-        .card {
-            background: #0d1b15;
-            border: 1px solid #1d3429;
-            border-radius: 22px;
-            padding: 25px;
-        }
+label{
+    display:block;
+    margin:15px 0 7px;
+    color:#ddd;
+    font-size:14px;
+}
 
-        .google-btn {
-            width: 100%;
-            height: 54px;
-            border: 1px solid #395247;
-            border-radius: 14px;
-            background: #ffffff;
-            color: #111;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
+input{
+    width:100%;
+    padding:14px;
+    border-radius:10px;
+    border:1px solid #30303d;
+    background:#08080d;
+    color:white;
+    outline:none;
+}
 
-        .google-icon {
-            font-size: 21px;
-        }
+input:focus{
+    border-color:#7c5cff;
+}
 
-        .divider {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: #687d73;
-            font-size: 13px;
-            margin: 25px 0;
-        }
+button{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:10px;
+    margin-top:18px;
+    font-size:15px;
+    font-weight:bold;
+    cursor:pointer;
+}
 
-        .divider::before,
-        .divider::after {
-            content: "";
-            height: 1px;
-            background: #263b31;
-            flex: 1;
-        }
+.create{
+    background:#7c5cff;
+    color:white;
+}
 
-        .info {
-            background: #07130e;
-            border: 1px solid #243c30;
-            border-radius: 14px;
-            padding: 15px;
-            color: #91a59b;
-            font-size: 13px;
-            line-height: 1.6;
-        }
+.google{
+    background:white;
+    color:#111;
+}
 
-        .info strong {
-            color: #d8b45a;
-        }
+.or{
+    text-align:center;
+    color:#777;
+    margin:20px 0;
+}
 
-        .message {
-            display: none;
-            margin-top: 15px;
-            padding: 12px;
-            border-radius: 10px;
-            background: #13271d;
-            color: #b9d6c5;
-            font-size: 13px;
-            line-height: 1.5;
-        }
+.message{
+    margin-top:15px;
+    padding:12px;
+    border-radius:10px;
+    background:#181820;
+    color:#bbb;
+    font-size:14px;
+    display:none;
+}
 
-        .login {
-            text-align: center;
-            margin-top: 22px;
-            color: #8fa198;
-            font-size: 14px;
-        }
+.bottom{
+    text-align:center;
+    margin-top:20px;
+    color:#888;
+    font-size:14px;
+}
 
-        .login span {
-            color: #d8b45a;
-            cursor: pointer;
-        }
-
-        .bd {
-            text-align: center;
-            margin-top: 23px;
-            color: #71867c;
-            font-size: 13px;
-        }
-
-        .flag {
-            display: inline-block;
-            width: 22px;
-            height: 14px;
-            background: #006a4e;
-            position: relative;
-            margin-right: 5px;
-            vertical-align: -2px;
-        }
-
-        .flag::after {
-            content: "";
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            background: #f42a41;
-            border-radius: 50%;
-            left: 7px;
-            top: 3px;
-        }
-    </style>
+.bottom a{
+    color:#8b70ff;
+    text-decoration:none;
+}
+</style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="box">
 
-    <div class="logo">Z</div>
-
-    <h1>Create ZIZZ Wallet</h1>
-
-    <p class="subtitle">
-        Your secure ZIZZ Coin wallet
-    </p>
-
-    <div class="card">
-
-        <button
-            class="google-btn"
-            onclick="continueWithGoogle()"
-        >
-            <span class="google-icon">G</span>
-            Continue with Google
-        </button>
-
-
-        <div class="divider">
-            OR
-        </div>
-
-
-        <div class="info">
-
-            <strong>How it works</strong>
-            <br><br>
-
-            1. Sign in with your Google account.
-            <br>
-
-            2. Your ZIZZ Wallet account is created automatically.
-            <br>
-
-            3. A unique Wallet ID is generated.
-            <br>
-
-            4. Your starting balance is <strong>0 Z</strong>.
-
-        </div>
-
-
-        <div
-            class="message"
-            id="message"
-        ></div>
-
-
-        <div class="login">
-
-            Already have a wallet?
-
-            <span onclick="goLogin()">
-                Login
-            </span>
-
-        </div>
-
+    <div class="logo">
+        ZIZZ<span>Wallet</span>
     </div>
 
+    <div class="subtitle">
+        Create your wallet account
+    </div>
 
-    <div class="bd">
-        <span class="flag"></span>
-        Bangladesh
+    <label>Full Name</label>
+    <input id="name" type="text" placeholder="Your name">
+
+    <label>Gmail / Email</label>
+    <input id="email" type="email" placeholder="example@gmail.com">
+
+    <label>Password</label>
+    <input id="password" type="password" placeholder="Minimum 6 characters">
+
+    <label>Confirm Password</label>
+    <input id="confirmPassword" type="password" placeholder="Repeat password">
+
+    <button class="create" onclick="createAccount()">
+        Create Account
+    </button>
+
+    <div class="or">OR</div>
+
+    <button class="google" onclick="googleLogin()">
+        Continue with Google
+    </button>
+
+    <div id="message" class="message"></div>
+
+    <div class="bottom">
+        Already have a wallet?
+        <a href="login.html">Login</a>
     </div>
 
 </div>
 
-
 <script>
 
 const SUPABASE_URL =
-    "https://dvipyqihaxcdpahzipb.supabase.co";
+"https://dvipyqihaxcdpahzipb.supabase.co";
 
+/*
+IMPORTANT:
+Nicher jaygay tomar Supabase
+Publishable key boshao.
+
+Supabase → Settings → API
+theke "Publishable key" copy koro.
+
+Secret key ekhane kokhono dio na.
+*/
 
 const SUPABASE_KEY =
-    "sb_publishable_OekqwQUbrFPSNhHn-w-K4g_hnUmxOeD";
+"sb_publishable_OekqwQUbrFPSNhHn-w-K4g_hnUmxOeD";
+
+const db = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
 
 
-const db =
-    supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-    );
+function showMessage(text){
+    const box = document.getElementById("message");
+    box.innerText = text;
+    box.style.display = "block";
+}
 
 
-async function continueWithGoogle() {
+async function createAccount(){
 
-    const message =
-        document.getElementById("message");
+    const name =
+        document.getElementById("name").value.trim();
 
-    message.style.display = "block";
+    const email =
+        document.getElementById("email").value.trim();
 
-    message.textContent =
-        "Opening Google login...";
+    const password =
+        document.getElementById("password").value;
+
+    const confirmPassword =
+        document.getElementById("confirmPassword").value;
+
+
+    if(!name || !email || !password || !confirmPassword){
+        showMessage("Please fill all fields.");
+        return;
+    }
+
+
+    if(password.length < 6){
+        showMessage("Password must be at least 6 characters.");
+        return;
+    }
+
+
+    if(password !== confirmPassword){
+        showMessage("Passwords do not match.");
+        return;
+    }
+
+
+    showMessage("Creating your account...");
+
+
+    const { data, error } =
+        await db.auth.signUp({
+
+            email: email,
+
+            password: password,
+
+            options:{
+                data:{
+                    full_name:name
+                },
+
+                emailRedirectTo:
+                    "https://zizzverse.github.io/zizz-wallet/dashboard.html"
+            }
+        });
+
+
+    if(error){
+
+        showMessage(error.message);
+
+        return;
+    }
+
+
+    if(data.session){
+
+        window.location.href =
+            "../dashboard.html";
+
+    }else{
+
+        showMessage(
+            "Account created! Check your email and confirm your account."
+        );
+    }
+}
+
+
+async function googleLogin(){
+
+    showMessage("Opening Google login...");
 
 
     const { error } =
         await db.auth.signInWithOAuth({
 
-            provider: "google",
-
-            options: {
-
-                redirectTo:
-                    window.location.origin +
-                    "/zizz-wallet/dashboard.html"
-
-            }
+            provider:"google"
 
         });
 
 
-    if (error) {
+    if(error){
 
-        message.textContent =
-            error.message;
+        showMessage(error.message);
 
     }
-
-}
-
-
-function goLogin() {
-
-    window.location.href =
-        "login.html";
-
 }
 
 </script>
