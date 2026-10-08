@@ -115,6 +115,25 @@
             font-size: 20px;
         }
 
+        /* BUY BUTTON */
+
+        .buy-btn {
+            width: 100%;
+            height: 55px;
+            margin-top: 12px;
+            border: 1px solid #80652c;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #d8b45a, #a77c25);
+            color: #07100b;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .buy-btn:active {
+            transform: scale(.98);
+        }
+
         .actions {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -238,6 +257,78 @@
             display: none;
         }
 
+        /* BUY MODAL */
+
+        .buy-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .78);
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .buy-box {
+            width: 100%;
+            max-width: 420px;
+            background: #0d1b15;
+            border: 1px solid #304b3d;
+            border-radius: 22px;
+            padding: 25px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, .5);
+        }
+
+        .buy-box h2 {
+            font-size: 24px;
+            margin-bottom: 7px;
+        }
+
+        .buy-subtitle {
+            color: #82958b;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        .coin-option {
+            width: 100%;
+            padding: 17px;
+            margin-top: 10px;
+            border: 1px solid #294437;
+            border-radius: 14px;
+            background: #10231a;
+            color: white;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .coin-option strong {
+            color: #d8b45a;
+            font-size: 18px;
+        }
+
+        .coin-option small {
+            display: block;
+            color: #82958b;
+            margin-top: 5px;
+        }
+
+        .coin-option:active {
+            transform: scale(.98);
+        }
+
+        .close-buy {
+            width: 100%;
+            height: 48px;
+            margin-top: 18px;
+            border: none;
+            border-radius: 12px;
+            background: #182c22;
+            color: white;
+            font-size: 15px;
+        }
+
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -336,6 +427,16 @@
     </div>
 
 
+    <!-- BUY ZIZZ COIN -->
+
+    <button
+        class="buy-btn"
+        onclick="openBuy()"
+    >
+        🪙 Buy ZIZZ Coin
+    </button>
+
+
     <div class="actions">
 
         <button
@@ -406,37 +507,148 @@
 </div>
 
 
+<!-- BUY MODAL -->
+
+<div
+    class="buy-modal"
+    id="buyModal"
+>
+
+    <div class="buy-box">
+
+        <h2>
+            🪙 Buy ZIZZ Coin
+        </h2>
+
+        <div class="buy-subtitle">
+            Select a ZIZZ Coin package
+        </div>
+
+
+        <button
+            class="coin-option"
+            onclick="selectPackage(1, 100)"
+        >
+
+            <strong>
+                $1 → 100 Z
+            </strong>
+
+            <small>
+                Starter package
+            </small>
+
+        </button>
+
+
+        <button
+            class="coin-option"
+            onclick="selectPackage(5, 500)"
+        >
+
+            <strong>
+                $5 → 500 Z
+            </strong>
+
+            <small>
+                Popular package
+            </small>
+
+        </button>
+
+
+        <button
+            class="coin-option"
+            onclick="selectPackage(10, 1000)"
+        >
+
+            <strong>
+                $10 → 1,000 Z
+            </strong>
+
+            <small>
+                Best value
+            </small>
+
+        </button>
+
+
+        <button
+            class="coin-option"
+            onclick="selectPackage(20, 2000)"
+        >
+
+            <strong>
+                $20 → 2,000 Z
+            </strong>
+
+            <small>
+                Large package
+            </small>
+
+        </button>
+
+
+        <button
+            class="close-buy"
+            onclick="closeBuy()"
+        >
+            Cancel
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- BOTTOM NAV -->
+
 <div class="bottom-nav">
 
     <div class="nav-inner">
 
         <button class="nav-item active">
+
             <span>⌂</span>
+
             Home
+
         </button>
+
 
         <button
             class="nav-item"
             onclick="goSend()"
         >
+
             <span>↗</span>
+
             Send
+
         </button>
+
 
         <button
             class="nav-item"
             onclick="goReceive()"
         >
+
             <span>↙</span>
+
             Receive
+
         </button>
+
 
         <button
             class="nav-item"
             onclick="logout()"
         >
+
             <span>👤</span>
+
             Logout
+
         </button>
 
     </div>
@@ -449,16 +661,21 @@
 const SUPABASE_URL =
 "https://dwipyqihaxcdpahzirpb.supabase.co";
 
+
 const SUPABASE_KEY =
-    "sb_publishable_OekqwQUbrFPSNhHn-w-K4g_hnUmxOeD";
+"sb_publishable_OekqwQUbrFPSNhHn-w-K4g_hnUmxOeD";
 
 
 const db =
-    supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-    );
+supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
 
+
+/* =========================
+   LOAD WALLET
+========================= */
 
 async function loadWallet() {
 
@@ -478,12 +695,11 @@ async function loadWallet() {
                 "auth/login.html";
 
             return;
+
         }
 
 
-        /*
-         * USER NAME
-         */
+        /* USER NAME */
 
         const fullName =
             user.user_metadata?.full_name ||
@@ -493,25 +709,31 @@ async function loadWallet() {
 
         document.getElementById(
             "userName"
-        ).textContent = fullName;
+        ).textContent =
+            fullName;
 
 
-        /*
-         * PROFILE
-         */
+        /* PROFILE */
 
         const {
             data: profile,
             error: profileError
         } = await db
             .from("profiles")
-            .select("wallet_id, full_name")
-            .eq("id", user.id)
+            .select(
+                "wallet_id, full_name"
+            )
+            .eq(
+                "id",
+                user.id
+            )
             .single();
 
 
         if (profileError) {
+
             throw profileError;
+
         }
 
 
@@ -521,9 +743,7 @@ async function loadWallet() {
             profile.wallet_id;
 
 
-        /*
-         * WALLET BALANCE
-         */
+        /* WALLET BALANCE */
 
         const {
             data: wallet,
@@ -531,26 +751,33 @@ async function loadWallet() {
         } = await db
             .from("wallets")
             .select("balance")
-            .eq("user_id", user.id)
+            .eq(
+                "user_id",
+                user.id
+            )
             .single();
 
 
         if (walletError) {
+
             throw walletError;
+
         }
 
 
         document.getElementById(
             "balance"
         ).textContent =
-            Number(wallet.balance).toLocaleString();
+            Number(
+                wallet.balance
+            ).toLocaleString();
 
 
-        /*
-         * TRANSACTIONS
-         */
+        /* TRANSACTIONS */
 
-        await loadTransactions(user.id);
+        await loadTransactions(
+            user.id
+        );
 
 
     } catch (error) {
@@ -567,7 +794,13 @@ async function loadWallet() {
 }
 
 
-async function loadTransactions(userId) {
+/* =========================
+   TRANSACTIONS
+========================= */
+
+async function loadTransactions(
+    userId
+) {
 
     const container =
         document.getElementById(
@@ -602,7 +835,10 @@ async function loadTransactions(userId) {
     }
 
 
-    if (!data || data.length === 0) {
+    if (
+        !data ||
+        data.length === 0
+    ) {
 
         container.innerHTML = `
             <div class="loading">
@@ -611,6 +847,7 @@ async function loadTransactions(userId) {
         `;
 
         return;
+
     }
 
 
@@ -630,7 +867,9 @@ async function loadTransactions(userId) {
 
 
         const item =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
 
         item.className =
@@ -648,7 +887,11 @@ async function loadTransactions(userId) {
                 <div>
 
                     <div class="tx-name">
-                        ${received ? "Received ZIZZ" : "Sent ZIZZ"}
+                        ${
+                            received
+                            ? "Received ZIZZ"
+                            : "Sent ZIZZ"
+                        }
                     </div>
 
                     <div class="tx-date">
@@ -659,19 +902,39 @@ async function loadTransactions(userId) {
 
             </div>
 
-            <strong class="${received ? "received" : "sent"}">
-                ${received ? "+" : "-"}${Number(tx.amount).toLocaleString()} Z
+            <strong
+                class="${
+                    received
+                    ? "received"
+                    : "sent"
+                }"
+            >
+                ${
+                    received
+                    ? "+"
+                    : "-"
+                }${
+                    Number(
+                        tx.amount
+                    ).toLocaleString()
+                } Z
             </strong>
 
         `;
 
 
-        container.appendChild(item);
+        container.appendChild(
+            item
+        );
 
     });
 
 }
 
+
+/* =========================
+   COPY WALLET
+========================= */
 
 function copyWalletId() {
 
@@ -693,15 +956,24 @@ function copyWalletId() {
 }
 
 
+/* =========================
+   LOGOUT
+========================= */
+
 async function logout() {
 
     await db.auth.signOut();
+
 
     window.location.href =
         "auth/login.html";
 
 }
 
+
+/* =========================
+   SEND
+========================= */
 
 function goSend() {
 
@@ -712,6 +984,10 @@ function goSend() {
 }
 
 
+/* =========================
+   RECEIVE
+========================= */
+
 function goReceive() {
 
     alert(
@@ -721,21 +997,77 @@ function goReceive() {
 }
 
 
-function showError(message) {
+/* =========================
+   BUY ZIZZ COIN
+========================= */
+
+function openBuy() {
+
+    document.getElementById(
+        "buyModal"
+    ).style.display =
+        "flex";
+
+}
+
+
+function closeBuy() {
+
+    document.getElementById(
+        "buyModal"
+    ).style.display =
+        "none";
+
+}
+
+
+function selectPackage(
+    dollar,
+    coins
+) {
+
+    closeBuy();
+
+
+    alert(
+        "$" +
+        dollar +
+        " package selected.\n\n" +
+        coins +
+        " ZIZZ Coin\n\n" +
+        "Payment system will be connected next."
+    );
+
+}
+
+
+/* =========================
+   ERROR
+========================= */
+
+function showError(
+    message
+) {
 
     const box =
         document.getElementById(
             "errorBox"
         );
 
+
     box.textContent =
         message;
+
 
     box.style.display =
         "block";
 
 }
 
+
+/* =========================
+   START
+========================= */
 
 loadWallet();
 
