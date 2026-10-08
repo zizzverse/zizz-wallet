@@ -6,7 +6,6 @@
 
     <title>ZIZZ Wallet - Create Account</title>
 
-    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
@@ -33,88 +32,88 @@
         }
 
         .logo {
-            width: 75px;
-            height: 75px;
-            margin: 0 auto 15px;
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 18px;
             border-radius: 50%;
             background: linear-gradient(145deg, #d8b45a, #8d671c);
+            color: #06110d;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 43px;
+            font-size: 45px;
             font-weight: bold;
-            color: #06110d;
+            box-shadow: 0 0 35px rgba(216,180,90,.25);
         }
 
         h1 {
             text-align: center;
-            font-size: 26px;
-            margin-bottom: 6px;
+            font-size: 27px;
+            margin-bottom: 7px;
         }
 
         .subtitle {
             text-align: center;
             color: #91a59b;
-            margin-bottom: 25px;
+            margin-bottom: 28px;
         }
 
         .card {
             background: #0d1b15;
             border: 1px solid #1d3429;
             border-radius: 22px;
-            padding: 24px;
+            padding: 25px;
         }
 
-        label {
-            display: block;
-            color: #b9c8c0;
-            font-size: 14px;
-            margin-bottom: 8px;
-        }
-
-        input {
+        .google-btn {
             width: 100%;
-            height: 50px;
-            background: #07130e;
-            border: 1px solid #294437;
-            border-radius: 13px;
-            color: white;
-            padding: 0 15px;
-            font-size: 15px;
-            outline: none;
-            margin-bottom: 16px;
-        }
-
-        input:focus {
-            border-color: #d8b45a;
-        }
-
-        .create-btn {
-            width: 100%;
-            height: 52px;
-            border: none;
-            border-radius: 13px;
-            background: linear-gradient(135deg, #d8b45a, #a87d24);
-            color: #08100c;
+            height: 54px;
+            border: 1px solid #395247;
+            border-radius: 14px;
+            background: #ffffff;
+            color: #111;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
-        .create-btn:disabled {
-            opacity: 0.6;
+        .google-icon {
+            font-size: 21px;
         }
 
-        .login {
-            text-align: center;
-            margin-top: 20px;
-            color: #8fa198;
-            font-size: 14px;
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #687d73;
+            font-size: 13px;
+            margin: 25px 0;
         }
 
-        .login span {
+        .divider::before,
+        .divider::after {
+            content: "";
+            height: 1px;
+            background: #263b31;
+            flex: 1;
+        }
+
+        .info {
+            background: #07130e;
+            border: 1px solid #243c30;
+            border-radius: 14px;
+            padding: 15px;
+            color: #91a59b;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .info strong {
             color: #d8b45a;
-            cursor: pointer;
         }
 
         .message {
@@ -128,9 +127,21 @@
             line-height: 1.5;
         }
 
-        .bd {
+        .login {
             text-align: center;
             margin-top: 22px;
+            color: #8fa198;
+            font-size: 14px;
+        }
+
+        .login span {
+            color: #d8b45a;
+            cursor: pointer;
+        }
+
+        .bd {
+            text-align: center;
+            margin-top: 23px;
             color: #71867c;
             font-size: 13px;
         }
@@ -167,64 +178,62 @@
     <h1>Create ZIZZ Wallet</h1>
 
     <p class="subtitle">
-        Create your secure wallet account
+        Your secure ZIZZ Coin wallet
     </p>
 
     <div class="card">
 
-        <label>Full Name</label>
-
-        <input
-            type="text"
-            id="name"
-            placeholder="Enter your full name"
-        >
-
-        <label>Phone Number</label>
-
-        <input
-            type="tel"
-            id="phone"
-            placeholder="+8801XXXXXXXXX"
-        >
-
-        <label>Password</label>
-
-        <input
-            type="password"
-            id="password"
-            placeholder="Minimum 6 characters"
-        >
-
-        <label>Confirm Password</label>
-
-        <input
-            type="password"
-            id="confirmPassword"
-            placeholder="Confirm password"
-        >
-
         <button
-            class="create-btn"
-            id="createBtn"
-            onclick="createAccount()"
+            class="google-btn"
+            onclick="continueWithGoogle()"
         >
-            Create Account
+            <span class="google-icon">G</span>
+            Continue with Google
         </button>
+
+
+        <div class="divider">
+            OR
+        </div>
+
+
+        <div class="info">
+
+            <strong>How it works</strong>
+            <br><br>
+
+            1. Sign in with your Google account.
+            <br>
+
+            2. Your ZIZZ Wallet account is created automatically.
+            <br>
+
+            3. A unique Wallet ID is generated.
+            <br>
+
+            4. Your starting balance is <strong>0 Z</strong>.
+
+        </div>
+
 
         <div
             class="message"
             id="message"
         ></div>
 
+
         <div class="login">
-            Already have an account?
+
+            Already have a wallet?
+
             <span onclick="goLogin()">
                 Login
             </span>
+
         </div>
 
     </div>
+
 
     <div class="bd">
         <span class="flag"></span>
@@ -239,165 +248,52 @@
 const SUPABASE_URL =
     "https://dvipyqihaxcdpahzipb.supabase.co";
 
+
 const SUPABASE_KEY =
     "sb_publishable_OekqwQUbrFPSNhHn-w-K4g_hnUmxOeD";
 
 
-const { createClient } =
-    supabase;
-
 const db =
-    createClient(
+    supabase.createClient(
         SUPABASE_URL,
         SUPABASE_KEY
     );
 
 
-function showMessage(text) {
+async function continueWithGoogle() {
 
     const message =
         document.getElementById("message");
 
-    message.textContent = text;
-
     message.style.display = "block";
-}
+
+    message.textContent =
+        "Opening Google login...";
 
 
-async function createAccount() {
+    const { error } =
+        await db.auth.signInWithOAuth({
 
-    const name =
-        document.getElementById("name").value.trim();
+            provider: "google",
 
-    const phone =
-        document.getElementById("phone").value.trim();
+            options: {
 
-    const password =
-        document.getElementById("password").value;
+                redirectTo:
+                    window.location.origin +
+                    "/zizz-wallet/dashboard.html"
 
-    const confirmPassword =
-        document.getElementById("confirmPassword").value;
+            }
 
-    const button =
-        document.getElementById("createBtn");
+        });
 
 
-    if (
-        name === "" ||
-        phone === "" ||
-        password === "" ||
-        confirmPassword === ""
-    ) {
+    if (error) {
 
-        showMessage(
-            "Please fill in all fields."
-        );
-
-        return;
-    }
-
-
-    if (password.length < 6) {
-
-        showMessage(
-            "Password must be at least 6 characters."
-        );
-
-        return;
-    }
-
-
-    if (password !== confirmPassword) {
-
-        showMessage(
-            "Passwords do not match."
-        );
-
-        return;
-    }
-
-
-    if (
-        !phone.startsWith("+880") ||
-        phone.length < 14
-    ) {
-
-        showMessage(
-            "Enter your Bangladesh phone number like +8801XXXXXXXXX"
-        );
-
-        return;
-    }
-
-
-    button.disabled = true;
-
-    button.textContent =
-        "Creating Account...";
-
-
-    try {
-
-        const { data, error } =
-            await db.auth.signUp({
-
-                phone: phone,
-
-                password: password,
-
-                options: {
-
-                    data: {
-                        full_name: name
-                    }
-
-                }
-
-            });
-
-
-        if (error) {
-
-            showMessage(
-                error.message
-            );
-
-            button.disabled = false;
-
-            button.textContent =
-                "Create Account";
-
-            return;
-        }
-
-
-        /*
-         * Supabase phone authentication
-         * normally requires OTP verification.
-         */
-
-        if (data.user) {
-
-            showMessage(
-                "Account created! Check your phone for the verification code."
-            );
-
-        }
-
-
-    } catch (error) {
-
-        showMessage(
-            "Something went wrong. Please try again."
-        );
+        message.textContent =
+            error.message;
 
     }
 
-
-    button.disabled = false;
-
-    button.textContent =
-        "Create Account";
 }
 
 
