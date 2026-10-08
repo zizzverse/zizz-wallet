@@ -6,6 +6,9 @@
 
     <title>ZIZZ Wallet - Create Account</title>
 
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
         * {
             margin: 0;
@@ -41,7 +44,6 @@
             font-size: 43px;
             font-weight: bold;
             color: #06110d;
-            box-shadow: 0 0 30px rgba(216,180,90,.25);
         }
 
         h1 {
@@ -97,19 +99,10 @@
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 5px;
         }
 
-        .google-btn {
-            width: 100%;
-            height: 52px;
-            border-radius: 13px;
-            border: 1px solid #30483c;
-            background: #101f18;
-            color: white;
-            font-size: 15px;
-            cursor: pointer;
-            margin-top: 15px;
+        .create-btn:disabled {
+            opacity: 0.6;
         }
 
         .login {
@@ -124,24 +117,15 @@
             cursor: pointer;
         }
 
-        .wallet-id {
+        .message {
             display: none;
-            margin-top: 18px;
-            padding: 14px;
-            border-radius: 13px;
-            background: #07130e;
-            border: 1px solid #294437;
-        }
-
-        .wallet-id small {
-            color: #879a91;
-        }
-
-        .wallet-id strong {
-            display: block;
-            color: #d8b45a;
-            margin-top: 5px;
-            word-break: break-all;
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 10px;
+            background: #13271d;
+            color: #b9d6c5;
+            font-size: 13px;
+            line-height: 1.5;
         }
 
         .bd {
@@ -201,7 +185,7 @@
         <input
             type="tel"
             id="phone"
-            placeholder="+880 1XXXXXXXXX"
+            placeholder="+8801XXXXXXXXX"
         >
 
         <label>Password</label>
@@ -209,7 +193,7 @@
         <input
             type="password"
             id="password"
-            placeholder="Create password"
+            placeholder="Minimum 6 characters"
         >
 
         <label>Confirm Password</label>
@@ -220,21 +204,18 @@
             placeholder="Confirm password"
         >
 
-        <button class="create-btn" onclick="createAccount()">
+        <button
+            class="create-btn"
+            id="createBtn"
+            onclick="createAccount()"
+        >
             Create Account
         </button>
 
-        <button class="google-btn" onclick="googleSignup()">
-            🔵 Continue with Google
-        </button>
-
-        <div class="wallet-id" id="walletBox">
-
-            <small>Your ZIZZ Wallet ID</small>
-
-            <strong id="walletId"></strong>
-
-        </div>
+        <div
+            class="message"
+            id="message"
+        ></div>
 
         <div class="login">
             Already have an account?
@@ -255,7 +236,35 @@
 
 <script>
 
-function createAccount() {
+const SUPABASE_URL =
+    "https://dvipyqihaxcdpahzipb.supabase.co";
+
+const SUPABASE_KEY =
+    "PASTE_YOUR_PUBLISHABLE_KEY_HERE";
+
+
+const { createClient } =
+    supabase;
+
+const db =
+    createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+function showMessage(text) {
+
+    const message =
+        document.getElementById("message");
+
+    message.textContent = text;
+
+    message.style.display = "block";
+}
+
+
+async function createAccount() {
 
     const name =
         document.getElementById("name").value.trim();
@@ -269,65 +278,133 @@ function createAccount() {
     const confirmPassword =
         document.getElementById("confirmPassword").value;
 
+    const button =
+        document.getElementById("createBtn");
 
-    if (name === "" ||
+
+    if (
+        name === "" ||
         phone === "" ||
         password === "" ||
-        confirmPassword === "") {
+        confirmPassword === ""
+    ) {
 
-        alert("Please fill in all fields.");
+        showMessage(
+            "Please fill in all fields."
+        );
+
         return;
     }
 
 
     if (password.length < 6) {
 
-        alert("Password must be at least 6 characters.");
+        showMessage(
+            "Password must be at least 6 characters."
+        );
+
         return;
     }
 
 
     if (password !== confirmPassword) {
 
-        alert("Passwords do not match.");
+        showMessage(
+            "Passwords do not match."
+        );
+
         return;
     }
 
 
-    const walletId =
-        "ZIZZ-" +
-        Math.random()
-        .toString(36)
-        .substring(2, 10)
-        .toUpperCase();
+    if (
+        !phone.startsWith("+880") ||
+        phone.length < 14
+    ) {
+
+        showMessage(
+            "Enter your Bangladesh phone number like +8801XXXXXXXXX"
+        );
+
+        return;
+    }
 
 
-    document.getElementById("walletId").textContent =
-        walletId;
+    button.disabled = true;
 
-    document.getElementById("walletBox").style.display =
-        "block";
-
-
-    alert(
-        "Account created successfully!\n\n" +
-        "Your Wallet ID: " + walletId
-    );
-}
+    button.textContent =
+        "Creating Account...";
 
 
-function googleSignup() {
+    try {
 
-    alert(
-        "Google Sign Up will be connected later."
-    );
+        const { data, error } =
+            await db.auth.signUp({
 
+                phone: phone,
+
+                password: password,
+
+                options: {
+
+                    data: {
+                        full_name: name
+                    }
+
+                }
+
+            });
+
+
+        if (error) {
+
+            showMessage(
+                error.message
+            );
+
+            button.disabled = false;
+
+            button.textContent =
+                "Create Account";
+
+            return;
+        }
+
+
+        /*
+         * Supabase phone authentication
+         * normally requires OTP verification.
+         */
+
+        if (data.user) {
+
+            showMessage(
+                "Account created! Check your phone for the verification code."
+            );
+
+        }
+
+
+    } catch (error) {
+
+        showMessage(
+            "Something went wrong. Please try again."
+        );
+
+    }
+
+
+    button.disabled = false;
+
+    button.textContent =
+        "Create Account";
 }
 
 
 function goLogin() {
 
-    window.location.href = "login.html";
+    window.location.href =
+        "login.html";
 
 }
 
