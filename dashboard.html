@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ZIZZ Wallet</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #06110d;
+            color: white;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            padding-bottom: 90px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 35px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #e5c15d, #9b711f);
+            color: #06110d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: bold;
+            box-shadow: 0 0 30px rgba(216, 180, 90, .25);
+        }
+
+        .brand h2 {
+            font-size: 21px;
+        }
+
+        .country {
+            padding: 10px 14px;
+            border: 1px solid #294437;
+            border-radius: 18px;
+            color: #d8b45a;
+        }
+
+        .welcome small {
+            color: #84988e;
+            font-size: 15px;
+        }
+
+        .welcome h1 {
+            margin-top: 8px;
+            font-size: 32px;
+        }
+
+        .balance-card {
+            margin-top: 28px;
+            background: linear-gradient(135deg, #16432f, #0a2017);
+            border: 1px solid #486541;
+            border-radius: 25px;
+            padding: 27px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .balance-card::after {
+            content: "Z";
+            position: absolute;
+            right: -15px;
+            bottom: -55px;
+            font-size: 170px;
+            font-weight: bold;
+            color: rgba(216, 180, 90, .06);
+        }
+
+        .balance-label {
+            color: #a4b8ad;
+            font-size: 14px;
+        }
+
+        .balance {
+            margin-top: 10px;
+            font-size: 43px;
+            font-weight: bold;
+        }
+
+        .coin {
+            color: #d8b45a;
+            font-size: 20px;
+        }
+
+        .actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .action {
+            height: 55px;
+            border-radius: 14px;
+            border: 1px solid #304b3d;
+            background: #0d1d15;
+            color: white;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        .action:first-child {
+            background: linear-gradient(135deg, #d8b45a, #a77c25);
+            color: #07100b;
+            border: none;
+        }
+
+        .section-title {
+            margin-top: 30px;
+            margin-bottom: 12px;
+            font-size: 19px;
+        }
+
+        .wallet-card {
+            background: #0d1b15;
+            border: 1px solid #233b2e;
+            border-radius: 18px;
+            padding: 18px;
+        }
+
+        .label {
+            color: #758a80;
+            font-size: 12px;
+        }
+
+        .wallet-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .wallet-row strong {
+            color: #d8b45a;
+            word-break: break-all;
+        }
+
+        .copy-btn {
+            border: none;
+            background: #182c22;
+            color: #d8b45a;
+            padding: 8px 12px;
+            border-radius: 9px;
+        }
+
+        .transaction {
+            background: #0d1b15;
+            border: 1px solid #20382c;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .tx-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .tx-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: #172c22;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tx-name {
+            font-size: 14px;
+        }
+
+        .tx-date {
+            margin-top: 4px;
+            color: #70857b;
+            font-size: 11px;
+        }
+
+        .received {
+            color: #4ed18f;
+        }
+
+        .sent {
+            color: #e67d7d;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px 10px;
+            color: #83968c;
+        }
+
+        .error {
+            background: #321817;
+            border: 1px solid #71302d;
+            color: #ffaaa5;
+            padding: 14px;
+            border-radius: 12px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: rgba(5, 15, 10, .97);
+            border-top: 1px solid #20382b;
+            z-index: 100;
+        }
+
+        .nav-inner {
+            max-width: 500px;
+            height: 100%;
+            margin: auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .nav-item {
+            border: none;
+            background: transparent;
+            color: #71857b;
+            font-size: 11px;
+        }
+
+        .nav-item span {
+            display: block;
+            font-size: 21px;
+            margin-bottom: 3px;
+        }
+
+        .nav-item.active {
+            color: #d8b45a;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+
+        <div class="brand">
+
+            <div class="logo">
+                Z
+            </div>
+
+            <h2>ZIZZ WALLET</h2>
+
+        </div>
+
+        <div class="country">
+            🇧🇩 BD
+        </div>
+
+    </div>
+
+
+    <div class="welcome">
+
+        <small>
+            Welcome back 👋
+        </small>
+
+        <h1 id="userName">
+            Loading...
+        </h1>
+
+    </div>
+
+
+    <div
+        class="balance-card"
+        id="balanceCard"
+    >
+
+        <div class="balance-label">
+            Available ZIZZ Coin
+        </div>
+
+        <div class="balance">
+
+            <span id="balance">
+                0
+            </span>
+
+            <span class="coin">
+                Z
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div class="actions">
+
+        <button
+            class="action"
+            onclick="goSend()"
+        >
+            ↗ Send
+        </button>
+
+        <button
+            class="action"
+            onclick="goReceive()"
+        >
+            ↙ Receive
+        </button>
+
+    </div>
+
+
+    <h3 class="section-title">
+        My Wallet
+    </h3>
+
+
+    <div class="wallet-card">
+
+        <div class="label">
+            ZIZZ Wallet ID
+        </div>
+
+        <div class="wallet-row">
+
+            <strong id="walletId">
+                Loading...
+            </strong>
+
+            <button
+                class="copy-btn"
+                onclick="copyWalletId()"
+            >
+                Copy
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <h3 class="section-title">
+        Recent Transactions
+    </h3>
+
+
+    <div id="transactions">
+
+        <div class="loading">
+            Loading transactions...
+        </div>
+
+    </div>
+
+
+    <div
+        class="error"
+        id="errorBox"
+    ></div>
+
+</div>
+
+
+<div class="bottom-nav">
+
+    <div class="nav-inner">
+
+        <button class="nav-item active">
+            <span>⌂</span>
+            Home
+        </button>
+
+        <button
+            class="nav-item"
+            onclick="goSend()"
+        >
+            <span>↗</span>
+            Send
+        </button>
+
+        <button
+            class="nav-item"
+            onclick="goReceive()"
+        >
+            <span>↙</span>
+            Receive
+        </button>
+
+        <button
+            class="nav-item"
+            onclick="logout()"
+        >
+            <span>👤</span>
+            Logout
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const SUPABASE_URL =
+    "https://dvipyqihaxcdpahzipb.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_OekqwQUbrFPSNhHn-w-K4g_hnUmxOeD";
+
+
+const db =
+    supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+async function loadWallet() {
+
+    try {
+
+        const {
+            data: {
+                user
+            },
+            error: sessionError
+        } = await db.auth.getUser();
+
+
+        if (sessionError || !user) {
+
+            window.location.href =
+                "auth/login.html";
+
+            return;
+        }
+
+
+        /*
+         * USER NAME
+         */
+
+        const fullName =
+            user.user_metadata?.full_name ||
+            user.user_metadata?.name ||
+            "ZIZZ User";
+
+
+        document.getElementById(
+            "userName"
+        ).textContent = fullName;
+
+
+        /*
+         * PROFILE
+         */
+
+        const {
+            data: profile,
+            error: profileError
+        } = await db
+            .from("profiles")
+            .select("wallet_id, full_name")
+            .eq("id", user.id)
+            .single();
+
+
+        if (profileError) {
+            throw profileError;
+        }
+
+
+        document.getElementById(
+            "walletId"
+        ).textContent =
+            profile.wallet_id;
+
+
+        /*
+         * WALLET BALANCE
+         */
+
+        const {
+            data: wallet,
+            error: walletError
+        } = await db
+            .from("wallets")
+            .select("balance")
+            .eq("user_id", user.id)
+            .single();
+
+
+        if (walletError) {
+            throw walletError;
+        }
+
+
+        document.getElementById(
+            "balance"
+        ).textContent =
+            Number(wallet.balance).toLocaleString();
+
+
+        /*
+         * TRANSACTIONS
+         */
+
+        await loadTransactions(user.id);
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        showError(
+            error.message ||
+            "Unable to load wallet."
+        );
+
+    }
+
+}
+
+
+async function loadTransactions(userId) {
+
+    const container =
+        document.getElementById(
+            "transactions"
+        );
+
+
+    const {
+        data,
+        error
+    } = await db
+        .from("transactions")
+        .select(
+            "id, sender_id, receiver_id, amount, transaction_type, created_at"
+        )
+        .or(
+            `sender_id.eq.${userId},receiver_id.eq.${userId}`
+        )
+        .order(
+            "created_at",
+            {
+                ascending: false
+            }
+        )
+        .limit(10);
+
+
+    if (error) {
+
+        throw error;
+
+    }
+
+
+    if (!data || data.length === 0) {
+
+        container.innerHTML = `
+            <div class="loading">
+                No transactions yet.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML = "";
+
+
+    data.forEach(tx => {
+
+        const received =
+            tx.receiver_id === userId;
+
+
+        const date =
+            new Date(
+                tx.created_at
+            ).toLocaleDateString();
+
+
+        const item =
+            document.createElement("div");
+
+
+        item.className =
+            "transaction";
+
+
+        item.innerHTML = `
+
+            <div class="tx-left">
+
+                <div class="tx-icon">
+                    ${received ? "↙" : "↗"}
+                </div>
+
+                <div>
+
+                    <div class="tx-name">
+                        ${received ? "Received ZIZZ" : "Sent ZIZZ"}
+                    </div>
+
+                    <div class="tx-date">
+                        ${date}
+                    </div>
+
+                </div>
+
+            </div>
+
+            <strong class="${received ? "received" : "sent"}">
+                ${received ? "+" : "-"}${Number(tx.amount).toLocaleString()} Z
+            </strong>
+
+        `;
+
+
+        container.appendChild(item);
+
+    });
+
+}
+
+
+function copyWalletId() {
+
+    const walletId =
+        document.getElementById(
+            "walletId"
+        ).textContent;
+
+
+    navigator.clipboard.writeText(
+        walletId
+    );
+
+
+    alert(
+        "Wallet ID copied!"
+    );
+
+}
+
+
+async function logout() {
+
+    await db.auth.signOut();
+
+    window.location.href =
+        "auth/login.html";
+
+}
+
+
+function goSend() {
+
+    alert(
+        "Send ZIZZ page will be added next."
+    );
+
+}
+
+
+function goReceive() {
+
+    alert(
+        "Receive ZIZZ page will be added next."
+    );
+
+}
+
+
+function showError(message) {
+
+    const box =
+        document.getElementById(
+            "errorBox"
+        );
+
+    box.textContent =
+        message;
+
+    box.style.display =
+        "block";
+
+}
+
+
+loadWallet();
+
+</script>
+
+</body>
+
+          </html>
